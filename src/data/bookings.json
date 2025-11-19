@@ -1,0 +1,22 @@
+[
+  {
+    "id": "1763534413932343",
+    "type": "kattalu",
+    "date": "2025-11-19",
+    "noOfKattalu": 2,
+    "pricePerKatta": 100,
+    "total": 200,
+    "perPerson": 200,
+    "persons": [
+      {
+        "id": "176353392683531",
+        "amount": 200
+      }
+    ],
+    "members": [
+      "176353392683531"
+    ],
+    "receiverName": "raju",
+    "createdAt": "2025-11-19T06:40:13.932Z"
+  }
+]
