@@ -1,21 +1,18 @@
 // src/services/user.service.js
-import { readJSON, writeJSON } from '../utils/storage.js';
-
-const USERS_FILE = 'users.json';
+import User from '../models/user.model.js';
 
 export async function getAllUsers() {
-  const u = (await readJSON(USERS_FILE)) || [];
-  return u;
+  const docs = await User.find().lean({ virtuals: true });
+  return docs;
 }
 
 export async function findUserByEmail(email) {
-  const users = await getAllUsers();
-  return users.find(u => u.email === email);
+  const doc = await User.findOne({ email }).lean({ virtuals: true });
+  return doc;
 }
 
 export async function addUser(user) {
-  const users = (await getAllUsers()) || [];
-  users.push(user);
-  await writeJSON(USERS_FILE, users);
-  return user;
+  // `user` should have: { name, email, passwordHash }
+  const doc = await User.create(user);
+  return doc.toJSON();
 }

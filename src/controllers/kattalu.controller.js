@@ -7,6 +7,7 @@ function nowISO() { return new Date().toISOString(); }
 
 export async function createKattalu(req, res) {
   const body = req.body || {};
+  console.log(body,"body");
 
   const noOfKattalu = Number(body.noOfKattalu || 0);
   const pricePerKatta = Number(body.pricePerKatta || 0);
@@ -17,15 +18,18 @@ export async function createKattalu(req, res) {
   if (!pricePerKatta || pricePerKatta < 0) return fail(res, 'pricePerKatta must be >= 0', 400);
   if (!members.length) return fail(res, 'At least one member required', 400);
 
-  // validate members exist
+  // 🔥 MongoDB persons validation
   const allPersons = await personsService.listPersons();
-  const invalid = members.find(id => !allPersons.find(p => p.id === id));
+  const invalid = members.find(id => !allPersons.find(p => p._id?.toString() === id));
   if (invalid) return fail(res, `Member id ${invalid} not found`, 400);
 
   const total = noOfKattalu * pricePerKatta;
   const perPerson = total / members.length;
 
+  // 🔥 Save person shares using Mongo id strings
   const persons = members.map(id => ({ id, amount: Number(perPerson.toFixed(2)) }));
+  console.log(members,"members");
+  console.log(persons,"persons");
 
   const booking = {
     id: String(Date.now()) + Math.floor(Math.random() * 999),
@@ -44,6 +48,7 @@ export async function createKattalu(req, res) {
   await bookingService.saveBooking(booking);
   return ok(res, booking, 'Kattalu booking saved');
 }
+
 
 export async function listKattalu(req, res) {
   const { date } = req.query || {};
