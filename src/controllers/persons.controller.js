@@ -7,6 +7,28 @@ export async function list(req, res) {
   return ok(res, list);
 }
 
+export async function ledger(req, res) {
+  const id = req.params.id;
+
+  const person = await personsService.getPerson(id);  // 👈 GET PERSON DETAILS
+
+  if (!person) return fail(res, "Person not found", 404);
+
+  const bookings = await bookingService.listBookings();
+  const filtered = bookings.filter(entry =>
+    (entry.persons || []).some(p => p.id === id)
+  );
+
+  const payments = await paymentService.getByPersonId(id);
+
+  return ok(res, {
+    person,
+    bookings: filtered,
+    payments
+  });
+}
+
+
 export async function create(req, res) {
   const { name, phone } = req.body || {};
   if (!name || name.trim() === '') return fail(res, 'Name is required', 400);
