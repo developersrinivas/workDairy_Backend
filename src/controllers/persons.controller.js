@@ -1,6 +1,8 @@
 // src/controllers/persons.controller.js
 import { ok, fail } from '../utils/response.js';
 import * as personsService from '../services/persons.service.js';
+import * as bookingService from '../services/booking.service.js';
+import * as paymentService from '../services/payment.service.js';
 
 export async function list(req, res) {
   const list = await personsService.listPersons();
@@ -9,6 +11,7 @@ export async function list(req, res) {
 
 export async function ledger(req, res) {
   const id = req.params.id;
+  console.log(id,"id");
 
   const person = await personsService.getPerson(id);  // 👈 GET PERSON DETAILS
 

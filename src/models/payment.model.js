@@ -1,28 +1,27 @@
-const mongoose = require('mongoose');
+// src/models/payment.model.js
+import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema({
   labourId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Labour',
+    ref: 'Person', // 🔥 important: ref must match persons model
     required: true,
   },
   amount: {
     type: Number,
-    required: [true, 'Payment amount is required'],
+    required: true,
     min: 0,
   },
   date: {
     type: Date,
-    required: [true, 'Payment date is required'],
+    default: new Date()
   },
   notes: {
     type: String,
     trim: true,
   },
-}, {
-  timestamps: true,
-});
+}, { timestamps: true });
 
 paymentSchema.index({ labourId: 1, date: -1 });
 
-module.exports = mongoose.model('Payment', paymentSchema);
+export default mongoose.model("Payment", paymentSchema);
