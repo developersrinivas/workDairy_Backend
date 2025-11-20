@@ -30,22 +30,20 @@ export async function register(req, res) {
   return ok(res, { token, user }, 'Registration successful');
 }
 
-export async function login(req, res) {
-  const { email, password } = req.body || {};
-  if (!email || !password) return fail(res, 'Email and password required', 400);
+export const login = (req, res) => {
+  const { mobile } = req.body;
 
-  // Mock: accept any credentials
-  let user = await userService.findUserByEmail(email);
-  if (!user) {
-    // Auto-register if not exists
-    user = await userService.addUser({
-      id: String(Date.now()) + Math.floor(Math.random() * 999),
-      email,
-      name: email.split('@')[0],
-      createdAt: new Date().toISOString()
-    });
+  if (!mobile) {
+    return res.status(400).json({ success: false, message: "Mobile number is required" });
   }
 
-  const token = generateMockToken(email);
-  return ok(res, { token, user }, 'Login successful');
-}
+  const allowedMobiles = ["9951785864", "720736266"]; // allowed numbers
+  console.log(mobile,"Mobile")
+
+  if (allowedMobiles.includes(mobile)) {
+    return res.json({ success: true, message: "Login successful" });
+  }
+
+  return res.status(401).json({ success: false, message: "Not authorized mobile number" });
+};
+
