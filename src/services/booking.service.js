@@ -2,13 +2,10 @@
 import Booking from '../models/booking.model.js';
 
 export async function listBookings() {
-  // old code: just array
-  const docs = await Booking.find().sort({ createdAt: 1 }).lean({ virtuals: true });
-  return docs;
+  return await Booking.find().sort({ createdAt: -1 }).lean();
 }
 
 export async function saveBooking(booking) {
-  // booking payload coming from controllers (kattalu/trip)
   const doc = await Booking.create({
     type: booking.type,
     date: booking.date,
@@ -26,14 +23,9 @@ export async function saveBooking(booking) {
 }
 
 export async function getBookingsByDate(dateStr) {
-  // original: filter by startsWith(dateStr)
-  const docs = await Booking.find({
-    date: new RegExp(`^${dateStr}`), // safeguards for same behaviour
-  })
-    .sort({ createdAt: 1 })
-    .lean({ virtuals: true });
-
-  return docs;
+  return await Booking.find({
+    date: new RegExp(`^${dateStr}`)
+  }).sort({ createdAt: -1 }).lean();
 }
 
 export async function listBookingsFiltered({ type, date }) {
@@ -41,9 +33,12 @@ export async function listBookingsFiltered({ type, date }) {
   if (type) query.type = type;
   if (date) query.date = new RegExp(`^${date}`);
 
-  const docs = await Booking.find(query)
-    .sort({ createdAt: 1 })
-    .lean({ virtuals: true });
+  return await Booking.find(query).sort({ createdAt: -1 }).lean();
+}
 
-  return docs;
+/* 🚀 NEW METHOD  (Required for Ledger) */
+export async function findByPerson(personId) {
+  return await Booking.find({
+    members: personId
+  }).sort({ createdAt: -1 }).lean();
 }

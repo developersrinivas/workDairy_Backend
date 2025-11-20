@@ -9,28 +9,61 @@ export async function list(req, res) {
   return ok(res, list);
 }
 
+// export async function ledger(req, res) {
+//   const id = req.params.id;
+//   console.log(id,"id");
+
+//   const person = await personsService.getPerson(id);  // 👈 GET PERSON DETAILS
+
+//   if (!person) return fail(res, "Person not found", 404);
+
+//   const bookings = await bookingService.listBookings();
+//   const filtered = bookings.filter(entry =>
+//     (entry.persons || []).some(p => p.id === id)
+//   );
+
+//   const payments = await paymentService.getByPersonId(id);
+
+//   return ok(res, {
+//     person,
+//     bookings: filtered,
+//     payments
+//   });
+// }
 export async function ledger(req, res) {
-  const id = req.params.id;
-  console.log(id,"id");
+  try {
+    const id = req.params.id;
 
-  const person = await personsService.getPerson(id);  // 👈 GET PERSON DETAILS
+    // 👉 1. Person Details
+    const person = await personsService.getPerson(id);
+    if (!person) return fail(res, "Person not found", 404);
+    // console.log(person, "person");
 
-  if (!person) return fail(res, "Person not found", 404);
+    // 👉 2. Get Bookings from MongoDB where user is a member
+    const bookings = await bookingService.findByPerson(id);
+    // console.log(bookings, "bookings");
 
-  const bookings = await bookingService.listBookings();
-  const filtered = bookings.filter(entry =>
-    (entry.persons || []).some(p => p.id === id)
-  );
+    // 👉 3. Get Payments from MongoDB for this person
+    const payments = await paymentService.getByPersonId(id);
+    // console.log(payments, "payments");
 
-  const payments = await paymentService.getByPersonId(id);
 
-  return ok(res, {
-    person,
-    bookings: filtered,
-    payments
-  });
+    console.log({
+      person,
+      bookings,
+      payments
+    })
+    return ok(res, {
+      person,
+      bookings,
+      payments
+    });
+
+  } catch (err) {
+    console.log("Ledger Error:", err);
+    return fail(res, "Failed to load ledger", 500);
+  }
 }
-
 
 export async function create(req, res) {
   const { name, phone } = req.body || {};

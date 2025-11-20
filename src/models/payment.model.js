@@ -1,27 +1,36 @@
-// src/models/payment.model.js
 import mongoose from "mongoose";
 
-const paymentSchema = new mongoose.Schema({
-  labourId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Person', // 🔥 important: ref must match persons model
-    required: true,
-  },
-  amount: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
-  date: {
-    type: Date,
-    default: new Date()
-  },
-  notes: {
-    type: String,
-    trim: true,
-  },
-}, { timestamps: true });
+const PaymentSchema = new mongoose.Schema(
+  {
+    personId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Person",
+      required: true,
+    },
+    amount: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
+    note: {
+      type: String,
+      default: "",
+    },
 
-paymentSchema.index({ labourId: 1, date: -1 });
+    // 🔥 FIX: Provide default type for payments
+    type: {
+      type: String,
+      enum: ["payment"], // only one type for now
+      default: "payment",
+      required: true,
+    },
 
-export default mongoose.model("Payment", paymentSchema);
+    date: {
+      type: String,
+      default: () => new Date().toISOString().slice(0, 10),
+    },
+  },
+  { timestamps: true }
+);
+
+export default mongoose.model("Payment", PaymentSchema);

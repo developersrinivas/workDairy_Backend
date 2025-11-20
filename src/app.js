@@ -6,6 +6,7 @@ import personsRoutes from './routes/persons.routes.js';
 import kattaluRoutes from './routes/kattalu.routes.js';
 import tripsRoutes from './routes/trips.js';
 import historyRoutes from './routes/history.routes.js';
+import paymentRoutes from "./routes/payment.routes.js";
 
 const app = express();
 
@@ -24,6 +25,8 @@ app.use('/api/persons', personsRoutes);
 app.use('/api/kattalu', kattaluRoutes);
 app.use('/api/trips', tripsRoutes);
 app.use('/api/history', historyRoutes);
+app.use("/api/payments", paymentRoutes);
+
 
 // Graceful error handling
 app.use((err, req, res, next) => {
